@@ -1,40 +1,38 @@
-const gamesBoardContainer = document.querySelector("#gamesboard-container");
-const options = document.querySelector(".options");
-const flipButton = document.querySelector("#flip-button");
+const gamesBoardContainer = document.querySelector('#gamesboard-container');
+const optionContainer = document.querySelector('.option-container');
+const flipButton = document.querySelector('#flip-button');
+
+// Option choosing
+let angle = 0;
+function flip() {
+const optionShips = Array.from(optionContainer.children);
+  angle = angle === 0 ? 90 : 0;
+  optionShips.forEach(optionShip => optionShip.style.transform = `rotate(${angle}deg)`)
+}
+
+flipButton.addEventListener("click", flip);
 
 // Creating Boards
 const width = 10;
 
 function createBoard(color, user) {
-  const gameBoardContainer = document.createElement("div");
-  gameBoardContainer.classList.add("game-board");
+  const gameBoardContainer = document.createElement('div');
+  gameBoardContainer.classList.add('game-board');
   gameBoardContainer.style.backgroundColor = color;
   gameBoardContainer.id = user;
 
   for (let i = 0; i < width * width; i++) {
-    const block = document.createElement("div");
-    block.classList.add("block");
+    const block = document.createElement('div');
+    block.classList.add('block');
     block.id = i;
-    gameBoardContainer.append(block);
+    gameBoardContainer.append(block)
   }
-
   gamesBoardContainer.append(gameBoardContainer);
 }
 
 createBoard("lightblue", "player");
 createBoard("pink", "computer");
 
-// Option choosing
-let angle = 0;
-function flip() {
-  const optionBoats = Array.from(options.children);
-  angle = angle === 0 ? 90 : 0;
-  optionBoats.forEach(
-    (optionBoat) => (optionBoat.style.transform = `rotate(${angle}deg)`)
-  );
-}
-
-flipButton.addEventListener("click", flip);
 
 //Creating Ships
 class Ship {
@@ -59,9 +57,9 @@ function addShipPiece(ship) {
   let randomStartIndex = Math.floor(Math.random() * width * width);
 
   let validStart = isHorizontal ? randomStartIndex <= width * width - ship.length ? randomStartIndex :
-        width * width - ship.length :
-        randomStartIndex <= width * width - width * ship.length ? randomStartIndex : 
-          randomStartIndex - ship.length * width + width;
+      width * width - ship.length :
+      randomStartIndex <= width * width - width * ship.length ? randomStartIndex : 
+        randomStartIndex - ship.length * width + width;
 
   let shipBlocks = [];
 
@@ -73,26 +71,35 @@ function addShipPiece(ship) {
     }
   }
 
-let valid
+  let valid
 
-if (isHorizontal) {
+  if (isHorizontal) {
     shipBlocks.every((_shipBlock, index) => 
       valid = shipBlocks[0].id % width !== width - (shipBlocks.length - (index + 1)))
-} else {
+  } else {
     shipBlocks.every((_shipBlock, index) => 
       valid = shipBlocks[0].id < 90 + (width * index + 1))
+  }
+
+  const notTaken = shipBlocks.every(shipBlock => !shipBlock.classList.contains('taken'))
+
+  if (valid && notTaken) {
+    shipBlocks.forEach(shipBlock => {
+      shipBlock.classList.add(ship.name);
+      shipBlock.classList.add('taken');
+    });
+  } else {
+      addShipPiece(ship)
+  }
 }
 
-const notTaken = shipBlocks.every(shipBlock => !shipBlock.classList.contains('taken'))
-
-if (valid && notTaken) {
-  shipBlocks.forEach(shipBlock => {
-    shipBlock.classList.add(ship.name);
-    shipBlock.classList.add("taken");
-  });
-} else {
-  addShipPiece(ship)
-}
-
-}
 ships.forEach(ship => addShipPiece(ship))
+
+// Drag player ships
+
+const optionShips = Array.from(options.children)
+optionShips.forEach(optionShip => optionShip.addEventListener('dragstart', dragStart))
+
+function dragStart(e){
+  console.log(e.target)
+}

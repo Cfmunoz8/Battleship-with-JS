@@ -14,11 +14,9 @@
 .block {
   width: 20px;
   height: 20px;
-  border: solid 0.5px black
-
 }
 
-.options {
+.option-container {
     width: 500px;
     height: 70px;
     margin: 30px 0;
